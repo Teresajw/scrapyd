@@ -1,5 +1,7 @@
 FROM python:3.12.9
 
+WORKDIR /usr/app
+
 # 设置时区
 ENV TZ=Asia/Shanghai
 RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -11,15 +13,11 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* # 额外清理apt的列表文件
 
-# 上传脚本
-ADD uv-installer.sh .
+COPY . .
 
 # 安装
-RUN sh uv-installer.sh
+RUN sh uv-installer.sh && export PATH="$HOME/.local/bin:$PATH" && uv sync && uv pip install -e ".[prj]"
 
-WORKDIR /usr/app
+EXPOSE 6800
 
-COPY pyproject.toml .
-COPY .python-version .
-
-RUN export PATH="$HOME/.local/bin:$PATH" && uv sync && uv pip install -e ".[prj]"
+CMD ["bash", "-c", "source .venv/bin/activate && cd scrapyd && python __main__.py"]
