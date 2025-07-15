@@ -35,14 +35,29 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+prj = [
+    "Scrapy==2.13.3",
+    "urllib3",
+    "fake-useragent==2.2.0",
+    "bs4==0.0.2",
+    "cryptography==45.0.5",
+    "rsa==4.9.1",
+    "ddddocr==1.5.6",
+    "onnxruntime",
+    "PyMySQL==1.1.1",
+    "redis==6.2.0",
+    "pandas==2.3.1",
+    "openpyxl==3.1.5",
+    "xlrd==2.0.2"
+]
 test = [
-  "coveralls",
-  "py-html-checker",
-  "pytest",
-  "pytest-cov",
-  "pytest-twisted",
-  "requests",
-  "twisted>=19.7",  # twisted.logger.capturedLogs
+    "coveralls",
+    "py-html-checker",
+    "pytest",
+    "pytest-cov",
+    "pytest-twisted",
+    "requests",
+    "twisted>=19.7", # twisted.logger.capturedLogs
 ]
 docs = [
     "furo",
@@ -65,31 +80,31 @@ target-version = "py38"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "ANN", "COM", "EM",
-  # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
-  "W191", "E501", "D206", "Q000", "Q001", "Q002", "Q003", "ISC001",
-  "D203", "D212",  # ignore incompatible rules
-  "D200",  # documentation preferences
-  "C901", "PLR0912",  # complexity preferences
+    "ANN", "COM", "EM",
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191", "E501", "D206", "Q000", "Q001", "Q002", "Q003", "ISC001",
+    "D203", "D212", # ignore incompatible rules
+    "D200", # documentation preferences
+    "C901", "PLR0912", # complexity preferences
 
-  # Project-specific
-  "D",
-  "PTH",  # Scrapyd hasn't adopted pathlib
-  "ARG002",  # Unused method argument (txrequest argument isn't always used)
-  "N802",  # Function name should be lowercase (Twisted uses method names like render_GET)
-  "N803",  # Argument name should be lowercase (Twisted uses argument names like avatarId)
-  "N815",  # Variable in class scope should not be mixedCase (Twisted uses class attributes like requestAvatarId)
-  "PLR0913",  # Too many arguments to function call
-  "S603",  # `subprocess` call: check for execution of untrusted input (informative)
+    # Project-specific
+    "D",
+    "PTH", # Scrapyd hasn't adopted pathlib
+    "ARG002", # Unused method argument (txrequest argument isn't always used)
+    "N802", # Function name should be lowercase (Twisted uses method names like render_GET)
+    "N803", # Argument name should be lowercase (Twisted uses argument names like avatarId)
+    "N815", # Variable in class scope should not be mixedCase (Twisted uses class attributes like requestAvatarId)
+    "PLR0913", # Too many arguments to function call
+    "S603", # `subprocess` call: check for execution of untrusted input (informative)
 
-  # sqlite3 doesn't have functions like psycopg2.sql.Identifier and psycopg2.sql.SQL.format.
-  "S608",  # Possible SQL injection vector through string-based query construction
+    # sqlite3 doesn't have functions like psycopg2.sql.Identifier and psycopg2.sql.SQL.format.
+    "S608", # Possible SQL injection vector through string-based query construction
 
-  # Scrapyd uses naive datetimes.
-  "DTZ001",  # `datetime.datetime()` called without a `tzinfo` argument"
-  "DTZ005",  # `datetime.datetime.now()` called without a `tz` argument
-  "DTZ006",  # `datetime.datetime.fromtimestamp()` called without a `tz` argument
-  "DTZ007",  # Naive datetime constructed using `datetime.datetime.strptime()` without %z
+    # Scrapyd uses naive datetimes.
+    "DTZ001", # `datetime.datetime()` called without a `tzinfo` argument"
+    "DTZ005", # `datetime.datetime.now()` called without a `tz` argument
+    "DTZ006", # `datetime.datetime.fromtimestamp()` called without a `tz` argument
+    "DTZ007", # Naive datetime constructed using `datetime.datetime.strptime()` without %z
 ]
 
 [tool.ruff.lint.flake8-builtins]
@@ -100,11 +115,16 @@ builtins-ignorelist = ["copyright"]
 "scrapyd/__main__.py" = ["T201"]  #  `print` found
 "scrapyd/interfaces.py" = ["N805"]  # First argument of a method should be named `self`
 "{tests,integration_tests}/*" = [
-  "D",  # docstring
-  "S101",  # assert
-  "S106",  # password
-  "S113",  # requests timeout
-  "PLR2004",  # magic value
-  "ARG001", "ARG002", "ARG005",  # mocks
-  "PT009", "PT027",  # Scrapyd mixes unittest with pytest
+    "D", # docstring
+    "S101", # assert
+    "S106", # password
+    "S113", # requests timeout
+    "PLR2004", # magic value
+    "ARG001", "ARG002", "ARG005", # mocks
+    "PT009", "PT027", # Scrapyd mixes unittest with pytest
 ]
+
+# 指定安装源
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple/"
+default = true
