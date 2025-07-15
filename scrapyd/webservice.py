@@ -9,6 +9,7 @@ import uuid
 import zipfile
 from collections import defaultdict
 from io import BytesIO
+from pathlib import Path
 from subprocess import PIPE, Popen
 from typing import ClassVar
 
@@ -412,3 +413,72 @@ class DeleteVersion(DeleteProject):
         self._delete_version(project, version)
         spider_list.delete(project, version)
         return {}
+
+
+class DeleteLog(WsResource):
+    @param("project")
+    @param("log_dir", required=False, default=None)
+    @param("log_path", required=False, default=None)
+    def render_POST(self, txrequest, project, log_dir, log_path):
+        try:
+            base_dir = Path(__file__).parent  # 当前文件同级目录
+
+            if log_dir:
+                # 删除目录下所有 .log 文件
+                target_dir = base_dir / "logs" / project / Path(log_dir.strip("/"))
+                if not target_dir.is_dir():
+                    raise error.Error(
+                        code=http.NOT_FOUND,
+                        message=b"Directory not found"
+                    )
+
+                count = 0
+                for log_file in target_dir.glob("**/*.log"):
+                    if log_file.is_file():
+                        log_file.unlink()
+                        count += 1
+
+                return {
+                    "dirpath": str(target_dir.resolve()),
+                    "message": f"Deleted {count} .log files"
+                }
+
+            elif log_path:
+                # 删除单个指定文件
+                file_path = base_dir / Path(log_path.lstrip("/"))
+
+                if not file_path.is_file():
+                    raise error.Error(
+                        code=http.NOT_FOUND,
+                        message=b"File not found"
+                    )
+
+                if not file_path.name.endswith(".log"):
+                    raise error.Error(
+                        code=http.FORBIDDEN,
+                        message=b"Illegal file type: only .log files can be deleted"
+                    )
+
+                file_path.unlink()
+
+                return {
+                    "filepath": str(file_path.resolve()),
+                    "message": f"Deleted: {file_path.name}"
+                }
+
+            else:
+                raise error.Error(
+                    code=http.BAD_REQUEST,
+                    message=b"Either log_dir or log_path must be provided"
+                )
+
+        except PermissionError:
+            raise error.Error(
+                code=http.FORBIDDEN,
+                message=b"Permission denied"
+            )
+        except Exception as e:
+            raise error.Error(
+                code=http.INTERNAL_SERVER_ERROR,
+                message=str(e).encode()
+            )
