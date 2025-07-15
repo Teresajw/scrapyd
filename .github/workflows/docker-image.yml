@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Build the Docker image
-      run: docker build . --file ../../Dockerfile --tag scrapyd_mod:$(date +%s)
+      run: docker build $GITHUB_WORKSPACE --file $GITHUB_WORKSPACE/Dockerfile --tag scrapyd_mod:$(date +%s)
