@@ -22,13 +22,13 @@ log = Logger()
 
 
 def param(
-    decoded: str,
-    *,
-    dest: str | None = None,
-    required: bool = True,
-    default=None,
-    multiple: bool = False,
-    type=str,  # noqa: A002 like Click
+        decoded: str,
+        *,
+        dest: str | None = None,
+        required: bool = True,
+        default=None,
+        multiple: bool = False,
+        type=str,  # noqa: A002 like Click
 ):
     encoded = decoded.encode()
     if dest is None:
@@ -417,60 +417,64 @@ class DeleteVersion(DeleteProject):
 
 class DeleteLog(WsResource):
     @param("project")
-    @param("log_dir", required=False, default=None)
-    @param("log_path", required=False, default=None)
-    def render_POST(self, txrequest, project, log_dir, log_path):
+    @param("log_path")
+    def render_POST(self, txrequest, project, log_path):
+        base_dir = Path(__file__).parent.resolve()
+        logs_base = base_dir / "logs"
+
         try:
-            base_dir = Path(__file__).parent  # 当前文件同级目录
-
-            if log_dir:
-                # 删除目录下所有 .log 文件
-                target_dir = base_dir / "logs" / project / Path(log_dir.strip("/"))
-                if not target_dir.is_dir():
-                    raise error.Error(
-                        code=http.NOT_FOUND,
-                        message=b"Directory not found"
-                    )
-
-                count = 0
-                for log_file in target_dir.glob("**/*.log"):
-                    if log_file.is_file():
-                        log_file.unlink()
-                        count += 1
-
-                return {
-                    "dirpath": str(target_dir.resolve()),
-                    "message": f"Deleted {count} .log files"
-                }
-
-            elif log_path:
-                # 删除单个指定文件
-                file_path = base_dir / Path(log_path.lstrip("/"))
-
-                if not file_path.is_file():
-                    raise error.Error(
-                        code=http.NOT_FOUND,
-                        message=b"File not found"
-                    )
-
-                if not file_path.name.endswith(".log"):
-                    raise error.Error(
-                        code=http.FORBIDDEN,
-                        message=b"Illegal file type: only .log files can be deleted"
-                    )
-
-                file_path.unlink()
-
-                return {
-                    "filepath": str(file_path.resolve()),
-                    "message": f"Deleted: {file_path.name}"
-                }
-
-            else:
+            if not log_path:
                 raise error.Error(
                     code=http.BAD_REQUEST,
-                    message=b"Either log_dir or log_path must be provided"
+                    message=b"log_path must be provided"
                 )
+
+            clean_path = Path(log_path.strip("/"))
+
+            # 必须以 logs/ 开头
+            if clean_path.parts[0] != "logs":
+                raise error.Error(
+                    code=http.BAD_REQUEST,
+                    message=b"log_path must start with /logs/"
+                )
+
+            # 去掉 logs/
+            relative_parts = clean_path.parts[1:]
+            if not relative_parts or relative_parts[0] != project:
+                raise error.Error(
+                    code=http.BAD_REQUEST,
+                    message=b"log_path must contain the correct project name after /logs/"
+                )
+
+            relative_path = Path(*relative_parts)
+            file_path = (logs_base / relative_path.relative_to(project)).resolve()
+            final_file_path = logs_base / project / file_path.relative_to(logs_base)
+
+            # 必须在 logs_base 下
+            if not str(final_file_path).startswith(str(logs_base)):
+                raise error.Error(
+                    code=http.FORBIDDEN,
+                    message=b"Access denied"
+                )
+
+            if not final_file_path.is_file():
+                raise error.Error(
+                    code=http.NOT_FOUND,
+                    message=b"File not found"
+                )
+
+            if final_file_path.suffix != ".log":
+                raise error.Error(
+                    code=http.FORBIDDEN,
+                    message=b"Only .log files can be deleted"
+                )
+
+            final_file_path.unlink()
+
+            return {
+                "filepath": str(final_file_path),
+                "message": f"Deleted: {final_file_path.name}"
+            }
 
         except PermissionError:
             raise error.Error(
@@ -480,5 +484,5 @@ class DeleteLog(WsResource):
         except Exception as e:
             raise error.Error(
                 code=http.INTERNAL_SERVER_ERROR,
-                message=str(e).encode()
+                message=f"Server error: {str(e)}".encode()
             )
