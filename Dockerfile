@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y libgl1-mesa-glx libgl1-mesa-dri vim && 
 
 COPY . .
 
-RUN sh uv-installer.sh && source $HOME/.local/bin/env && uv sync && uv pip install -e ".[prj]"
+RUN sh uv-installer.sh && export PATH="$HOME/.local/bin:$PATH" && uv sync && uv pip install -e ".[prj]"
 
 
 FROM python:3.12.9 AS runner
