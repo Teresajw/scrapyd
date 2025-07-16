@@ -1,3 +1,10 @@
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    message=r".*pkg_resources is deprecated.*"
+)
 import os
 import shutil
 import tempfile
