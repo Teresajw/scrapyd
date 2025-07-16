@@ -5,7 +5,7 @@ WORKDIR /usr/app
 # 安装系统依赖
 RUN apt-get update && apt-get install -y libgl1-mesa-glx libgl1-mesa-dri vim && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
+COPY . .
 
 RUN sh uv-installer.sh && uv sync && uv pip install -e ".[prj]"
 
