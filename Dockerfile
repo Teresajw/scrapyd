@@ -23,8 +23,8 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
     && rm -rf /var/lib/apt/lists/*
 
 # 复制虚拟环境和代码
-COPY --from=builder /usr/app/.venv .
-COPY --from=builder /usr/app/scrapyd .
+COPY --from=builder /usr/app/.venv ./.venv
+COPY --from=builder /usr/app/scrapyd ./scrapyd
 
 ENV PATH="/usr/app/.venv/bin:$PATH"
 
