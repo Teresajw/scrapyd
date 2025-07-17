@@ -460,7 +460,7 @@ class DeleteLog(WsResource):
             if not final_file_path.is_file():
                 raise error.Error(
                     code=http.NOT_FOUND,
-                    message=b"File not found"
+                    message=b"File not found, %b" % str(final_file_path).encode()
                 )
 
             if final_file_path.suffix != ".log":
@@ -475,14 +475,5 @@ class DeleteLog(WsResource):
                 "filepath": str(final_file_path),
                 "message": f"Deleted: {final_file_path.name}"
             }
-
-        except PermissionError:
-            raise error.Error(
-                code=http.FORBIDDEN,
-                message=b"Permission denied"
-            )
         except Exception as e:
-            raise error.Error(
-                code=http.INTERNAL_SERVER_ERROR,
-                message=f"Server error: {str(e)}".encode()
-            )
+            raise error.Error(code=http.BAD_REQUEST, message=f"Delete Failed: {str(e)}".encode("utf-8"))
