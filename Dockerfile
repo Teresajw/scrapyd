@@ -16,13 +16,11 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
 
 # 先复制安装依赖所需的文件
 ADD uv.tar.gz /usr/local/bin
-COPY pyproject.toml .
+
+COPY . .
 
 # 安装项目依赖
-RUN uv sync && uv pip install --no-cache-dir -e ".[prj]"
-
-# 然后复制剩余文件
-COPY . .
+RUN rm -f uv.tar.gz && uv --version && uv sync && uv pip install --no-cache-dir -e ".[prj]"
 
 EXPOSE 6800
 
