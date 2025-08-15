@@ -17,7 +17,8 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
 # 安装 uv 并验证
 RUN curl -L https://github.com/astral-sh/uv/releases/download/0.7.0/uv-x86_64-unknown-linux-gnu.tar.gz -o uv.tar.gz \
     && tar -xzf uv.tar.gz \
-    && install -m 755 uv-x86_64-unknown-linux-gnu /usr/local/bin/uv \
+    && mv uv-x86_64-unknown-linux-gnu /usr/local/bin/uv \
+    && chmod +x /usr/local/bin/uv \
     && rm uv.tar.gz \
     && uv --version
 
