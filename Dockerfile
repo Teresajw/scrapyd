@@ -25,7 +25,7 @@ RUN curl -L https://github.com/astral-sh/uv/releases/download/0.7.0/uv-x86_64-un
 COPY pyproject.toml .
 
 # 安装项目依赖
-RUN uv pip install --no-cache-dir -e ".[prj]"
+RUN uv sync && uv pip install --no-cache-dir -e ".[prj]"
 
 # 然后复制剩余文件
 COPY . .
