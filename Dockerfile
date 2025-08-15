@@ -12,7 +12,7 @@ RUN sh uv-installer.sh && export PATH="$HOME/.local/bin:$PATH" && uv sync && uv 
 
 FROM python:3.12.9 AS runner
 
-WORKDIR /usr/app
+WORKDIR /etc/scrapyd
 
 ENV TZ=Asia/Shanghai
 RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -26,7 +26,7 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
 COPY --from=builder /usr/app/.venv ./.venv
 COPY --from=builder /usr/app/scrapyd ./scrapyd
 
-ENV PATH="/usr/app/.venv/bin:$PATH"
+ENV PATH="/etc/scrapyd/.venv/bin:$PATH"
 
 EXPOSE 6800
 
