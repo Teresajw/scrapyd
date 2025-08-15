@@ -14,18 +14,8 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 uv 并验证
-RUN curl -L https://github.com/astral-sh/uv/releases/download/0.7.0/uv-x86_64-unknown-linux-gnu.tar.gz -o uv.tar.gz \
-    && tar -xzf uv.tar.gz \
-    && mv uv-x86_64-unknown-linux-gnu /usr/local/bin/uv \
-    && chmod +x /usr/local/bin/uv \
-    && rm uv.tar.gz \
-    && uv --version
-
-# 确保 PATH 包含 /usr/local/bin
-ENV PATH="/usr/local/bin:${PATH}"
-
 # 先复制安装依赖所需的文件
+ADD uv.tar.gz /usr/local/bin
 COPY pyproject.toml .
 
 # 安装项目依赖
