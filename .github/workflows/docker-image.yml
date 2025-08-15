@@ -18,4 +18,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ secrets.DOCKER_HUBNAME }}/scrapyd_mod:v2
+          tags: ${{ secrets.DOCKER_HUBNAME }}/scrapyd_mod:v3
