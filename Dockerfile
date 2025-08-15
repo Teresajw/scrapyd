@@ -31,8 +31,8 @@ RUN sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' 
 
 # 复制虚拟环境和代码
 COPY --from=builder /usr/local/bin/uv* /usr/local/bin
-COPY --from=builder /usr/app/.venv ./.venv
-COPY --from=builder /usr/app/scrapyd .
+COPY --from=builder /usr/app/.venv /etc/scrapyd/.venv
+COPY --from=builder /usr/app/scrapyd /etc/scrapyd
 
 EXPOSE 6800
 
