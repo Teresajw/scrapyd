@@ -23,7 +23,6 @@ RUN curl -L https://github.com/astral-sh/uv/releases/download/0.7.0/uv-x86_64-un
 
 # 先复制安装依赖所需的文件
 COPY pyproject.toml .
-COPY requirements.txt .
 
 # 安装项目依赖
 RUN uv pip install --no-cache-dir -r requirements.txt \
