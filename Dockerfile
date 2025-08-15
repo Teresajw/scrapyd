@@ -1,6 +1,6 @@
 FROM python:3.12.9 AS builder
 
-WORKDIR /usr/app
+WORKDIR /etc/scrapyd
 
 # 安装系统依赖
 RUN apt-get update && apt-get install -y libgl1-mesa-glx libgl1-mesa-dri vim && rm -rf /var/lib/apt/lists/*
